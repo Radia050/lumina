@@ -29,11 +29,17 @@ export async function proxy(req: NextRequest) {
   const role = user?.app_metadata?.role ?? user?.user_metadata?.role;
   const isStudentRoute = req.nextUrl.pathname.startsWith("/student");
   const isHeroPage = req.nextUrl.pathname === "/";
-
+  const isTeacherRoute=req.nextUrl.pathname.startsWith("/teacher");
   if (isStudentRoute) {
-    if (!user || role !== "student") {
+    if (!user || role !=="student") {
       return NextResponse.redirect(new URL("/", req.url));
     }
+  }
+  if(isTeacherRoute && role!=="teacher"){
+    return NextResponse.redirect(new URL("/",req.url));
+  }
+  if(isHeroPage && user && role==="teacher"){
+        return NextResponse.redirect(new URL("/teacher", req.url));
   }
 
   if (isHeroPage && user && role === "student") {
@@ -44,5 +50,5 @@ export async function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/student/:path*"],
+  matcher: ["/", "/student/:path*","/teacher/:path*"],
 };

@@ -5,24 +5,29 @@ import React from "react";
 import '@/app/ui/styles/homeAuthentification.css';
 import Button from "@/app/ui/Button";
 import Logo from "@/app/ui/Logo";
+
 interface AuthentificationProps{
-    onSuccess?:()=>void;
+    onSuccess?:(role: "student"|"teacher"|null)=>void;
 }
 const Authentification: React.FC <AuthentificationProps>= ({onSuccess}) => {
     async function handleSubmit(e:React.FormEvent){
         e.preventDefault();
         const { error}=await supabase.auth.signInWithPassword({email,password});
-
-        
-        if(!error){
-            onSuccess?.();
-        }else{
+         if(error){
             const invalidCredentialsError = error.message.toLowerCase().includes('invalid email or password');
             setError(invalidCredentialsError?'the email or password is incorrect. Please try again.'
                : 'the email or password is incorrect. Please try again.'
             );
             return;
+           
         }
+        const {data:{user}}=await supabase.auth.getUser();
+        const role =
+        user?.app_metadata?.role ??
+        user?.user_metadata?.role ??
+        null;
+        onSuccess?.(role);
+       
     }
     const supabase=createClient();
     const [email,setEmail]=useState('');

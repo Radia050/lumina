@@ -7,7 +7,6 @@ import MainIdea from '@/app/ui/MainIdea';
 import Features from '@/app/ui/Features';
 import About from '@/app/ui/About';
 import LastHook from '@/app/ui/LastHook';
-import Footer from '@/app/ui/Footer';
 import { useEffect,useState } from 'react';
 import Authentification from '@/app/ui/Authentification';
 import { createClient } from "@/app/lib/supabase/client";
@@ -59,7 +58,7 @@ export default function HomeLanding(){
       <div className="body">
         <Hero 
         src="/videos/homeVideo.mp4"
-        title="Learn Smarter. Adapt Faster."
+        
         subtitle="Lumina is an AI-powered adaptive learning platform designed for 
           university students. It personalizes learning paths based on 
           performance, engagement, and skill level."
@@ -71,7 +70,7 @@ export default function HomeLanding(){
         <Features />
         <About />
         <LastHook />
-        <Footer />  
+      
       </div>
       
     </div>  

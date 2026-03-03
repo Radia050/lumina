@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '../lib/supabase/server';
 import LogoutButton from "@/app/ui/LogoutButton";
+import { getRole } from "@/app/lib/auth/getRole";
 export default async function teacherPage() {
     const supabase = await createClient();
    
@@ -12,8 +13,10 @@ export default async function teacherPage() {
     if(!user){
         redirect("/");
     }
-     const role =user?.app_metadata?.role ?? user?.user_metadata?.role;
-     if(role!=="teacher"){
+
+
+    const role = getRole(user);
+    if(role!=="teacher"){
         redirect("/");
      }
     return (<div>

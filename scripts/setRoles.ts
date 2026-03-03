@@ -8,7 +8,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
 );
 
-async function setUserRole(email: string, role: "teacher" | "student") {
+async function setUserRole(email: string, role: "teacher" | "student"|"admin") {
 
   const { data: listData, error: fetchError } =
     await supabase.auth.admin.listUsers({
@@ -43,4 +43,4 @@ async function setUserRole(email: string, role: "teacher" | "student") {
 //setUserRole("john.doe@example.com", "teacher");
 
 
-setUserRole("jane.smith@example.com", "student");
+setUserRole("radia@example.com", "admin");

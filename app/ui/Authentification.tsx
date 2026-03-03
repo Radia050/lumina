@@ -7,7 +7,7 @@ import Button from "@/app/ui/Button";
 import Logo from "@/app/ui/Logo";
 
 interface AuthentificationProps{
-    onSuccess?:(role: "student"|"teacher"|null)=>void;
+    onSuccess?:(role: "student"|"teacher"|"admin"|null)=>void;
 }
 const Authentification: React.FC <AuthentificationProps>= ({onSuccess}) => {
     async function handleSubmit(e:React.FormEvent){

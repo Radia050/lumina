@@ -1,7 +1,6 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
-
-
+import { getRole } from "@/app/lib/auth/getRole";
 
 export async function proxy(req: NextRequest) {
   let response = NextResponse.next({ request: req });
@@ -26,29 +25,34 @@ export async function proxy(req: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  const role = user?.app_metadata?.role ?? user?.user_metadata?.role;
+  const role = getRole(user);
   const isStudentRoute = req.nextUrl.pathname.startsWith("/student");
   const isHeroPage = req.nextUrl.pathname === "/";
-  const isTeacherRoute=req.nextUrl.pathname.startsWith("/teacher");
+  const isTeacherRoute = req.nextUrl.pathname.startsWith("/teacher");
+  const isAdminRoute = req.nextUrl.pathname.startsWith("/admin");
   if (isStudentRoute) {
-    if (!user || role !=="student") {
+    if (!user || role !== "student") {
       return NextResponse.redirect(new URL("/", req.url));
     }
   }
-  if(isTeacherRoute && role!=="teacher"){
-    return NextResponse.redirect(new URL("/",req.url));
+  if (isTeacherRoute && role !== "teacher") {
+    return NextResponse.redirect(new URL("/", req.url));
   }
-  if(isHeroPage && user && role==="teacher"){
-        return NextResponse.redirect(new URL("/teacher", req.url));
+  if (isHeroPage && user && role === "teacher") {
+    return NextResponse.redirect(new URL("/teacher", req.url));
   }
 
   if (isHeroPage && user && role === "student") {
     return NextResponse.redirect(new URL("/student", req.url));
   }
 
+  if (isAdminRoute && role !== "admin") {
+    return NextResponse.redirect(new URL("/", req.url));
+  }
+
   return response;
 }
 
 export const config = {
-  matcher: ["/", "/student/:path*","/teacher/:path*"],
+  matcher: ["/", "/student/:path*", "/teacher/:path*", "/admin/:path*"],
 };

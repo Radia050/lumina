@@ -12,7 +12,7 @@ import { useEffect,useState } from 'react';
 import Authentification from '@/app/ui/Authentification';
 import { createClient } from "@/app/lib/supabase/client";
 
- type Role = "student" | "teacher" | null;
+ type Role = "student" | "teacher" | "admin"|null;
 
 export default function HomeLanding(){
     const router=useRouter();
@@ -25,7 +25,8 @@ export default function HomeLanding(){
         const { data:{ user }} = await supabase.auth.getUser();
         const role = user?.app_metadata?.role ?? user?.user_metadata?.role;
          if (role === 'teacher') router.replace('/teacher');
-        if (role === 'student') router.replace('/student');
+         if (role === 'student') router.replace('/student');
+         if(role==='admin')router.replace('/admin');
     };
     enforceRoleRedirect();
     window.addEventListener('pageshow',enforceRoleRedirect);
@@ -46,8 +47,11 @@ export default function HomeLanding(){
             router.replace("/student");
           }else if(role==="teacher"){
             router.replace("/teacher");
+          }else if(role==="admin"){
+            router.replace("/admin");
           }else{
-            router.replace("/");
+             router.replace("/");
+
           }
         }}
         />

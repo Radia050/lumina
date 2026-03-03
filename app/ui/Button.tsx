@@ -1,11 +1,15 @@
 import React from 'react';
 import Link from 'next/link';
+import type { LinkProps } from 'next/link';
 
-interface AnchorProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+interface AnchorProps extends Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> {
   href: string;
   children: React.ReactNode;
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
   size?: 's' | 'm' | 'l';
+  replace?: LinkProps['replace'];
+  scroll?: LinkProps['scroll'];
+  prefetch?: LinkProps['prefetch'];
 }
 
 interface RegularButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {

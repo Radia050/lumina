@@ -16,11 +16,14 @@ export default async function adminPage(){
         redirect("/");
     }
 
-    return(
-        <div>
-        <h1>Admin Dashboard</h1>
-        <LogoutButton />
+    return (
+      <main className="min-h-screen pt-28 pb-24 px-4 flex items-center justify-center">
+        <div className="w-full max-w-3xl text-center space-y-6">
+          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+          <div className="flex justify-center">
+            <LogoutButton />
+          </div>
         </div>
-    
-    )
+      </main>
+    );
 }

@@ -1,60 +1,70 @@
 'use client';
 import {useRouter}from 'next/navigation';
 import '@/app/ui/global.css';
-import NavBar from '@/app/ui/NavBar';
 import Hero from '@/app/ui/Hero';
 import MainIdea from '@/app/ui/MainIdea';
 import Features from '@/app/ui/Features';
 import About from '@/app/ui/About';
 import LastHook from '@/app/ui/LastHook';
 import { useEffect,useState } from 'react';
-import Authentification from '@/app/ui/Authentification';
 import { createClient } from "@/app/lib/supabase/client";
-
- type Role = "student" | "teacher" | "admin"|null;
 
 export default function HomeLanding(){
     const router=useRouter();
-  const [auth, setauth] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
 
   useEffect(()=>{
     const supabase= createClient();
+    let cancelled = false;
 
     const enforceRoleRedirect=async()=>{
+        if (!cancelled) setCheckingAuth(true);
         const { data:{ user }} = await supabase.auth.getUser();
-        const role = user?.app_metadata?.role ?? user?.user_metadata?.role;
-         if (role === 'teacher') router.replace('/teacher');
-         if (role === 'student') router.replace('/student');
-         if(role==='admin')router.replace('/admin');
+        const role = user?.app_metadata?.role;
+         if (role === 'teacher') {
+          router.replace('/teacher');
+          return;
+         }
+         if (role === 'student') {
+          router.replace('/student');
+          return;
+         }
+         if(role==='admin') {
+          router.replace('/admin');
+          return;
+         }
+         if (!cancelled) setCheckingAuth(false);
     };
+    const handlePageHide = () => {
+      setCheckingAuth(true);
+    };
+    const disableBfCache = () => {};
+    const handlePageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) {
+        window.location.reload();
+        return;
+      }
+      void enforceRoleRedirect();
+    };
+
     enforceRoleRedirect();
-    window.addEventListener('pageshow',enforceRoleRedirect);
-    return()=> window.removeEventListener('pageshow',enforceRoleRedirect);
+    window.addEventListener('pageshow', handlePageShow);
+    window.addEventListener('pagehide', handlePageHide);
+    window.addEventListener('unload', disableBfCache);
+    return()=> {
+      cancelled = true;
+      window.removeEventListener('pageshow', handlePageShow);
+      window.removeEventListener('pagehide', handlePageHide);
+      window.removeEventListener('unload', disableBfCache);
+    };
   },[router]);
+
+  if (checkingAuth) {
+    return <div className="min-h-screen bg-slate-950" />;
+  }
+
   return (
     <div>
-      <NavBar onLoginClick={()=>{
-        setauth((prev)=>!prev);
-      }
-      }/>
-      <div className= {auth ? "auth" : "auth-hidden"}>
-       
-        <Authentification 
-        onSuccess={(role:Role)=>{
-          setauth(false);
-          if(role==="student"){
-            router.replace("/student");
-          }else if(role==="teacher"){
-            router.replace("/teacher");
-          }else if(role==="admin"){
-            router.replace("/admin");
-          }else{
-             router.replace("/");
-
-          }
-        }}
-        />
-      </div>
       <div className="body">
         <Hero 
         src="/videos/homeVideo.mp4"

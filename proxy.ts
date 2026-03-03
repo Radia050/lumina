@@ -26,10 +26,23 @@ export async function proxy(req: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
   const role = getRole(user);
+  const dashboardPath =
+    role === "teacher" ? "/teacher" : role === "student" ? "/student" : role === "admin" ? "/admin" : "/";
+
   const isStudentRoute = req.nextUrl.pathname.startsWith("/student");
   const isHeroPage = req.nextUrl.pathname === "/";
   const isTeacherRoute = req.nextUrl.pathname.startsWith("/teacher");
   const isAdminRoute = req.nextUrl.pathname.startsWith("/admin");
+  const isAuthPage =
+    req.nextUrl.pathname === "/log-in" ||
+    req.nextUrl.pathname === "/sign-up" ||
+    req.nextUrl.pathname === "/login" ||
+    req.nextUrl.pathname === "/signup";
+
+  if (isAuthPage && user) {
+    return NextResponse.redirect(new URL(dashboardPath, req.url));
+  }
+
   if (isStudentRoute) {
     if (!user || role !== "student") {
       return NextResponse.redirect(new URL("/", req.url));
@@ -54,5 +67,14 @@ export async function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/student/:path*", "/teacher/:path*", "/admin/:path*"],
+  matcher: [
+    "/",
+    "/log-in",
+    "/sign-up",
+    "/login",
+    "/signup",
+    "/student/:path*",
+    "/teacher/:path*",
+    "/admin/:path*",
+  ],
 };

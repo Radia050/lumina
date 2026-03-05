@@ -5,8 +5,10 @@ import Link from "next/link";
 import clsx from "clsx";
 import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 export default function SignupPageView() {
+  const router = useRouter();
   const supabase = createClient();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -19,7 +21,8 @@ export default function SignupPageView() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-
+  const[teacher,setTeacher]=useState(false);
+    
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
@@ -56,8 +59,28 @@ export default function SignupPageView() {
     if (data.session && !rememberMe) {
       await supabase.auth.signOut({ scope: "global" });
     }
+    if (data.session) {
+  const res = await fetch("/auth/finalize-signup", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ teacher }),
+  });
 
-    setSuccess("Account created. Check your email to confirm your signup.");
+  if (!res.ok) {
+    setError("Account created, but setup failed.");
+    setLoading(false);
+    return;
+  }
+  
+  const payload = (await res.json()) as { nextPath?: string };
+  router.replace(payload.nextPath ?? "/student");
+  router.refresh();
+  setLoading(false);
+  return;
+}
+
+
+    // setSuccess("Account created. Check your email to confirm your signup.");
     setLoading(false);
   }
 
@@ -65,12 +88,16 @@ export default function SignupPageView() {
     setError("");
     setSuccess("");
     setGoogleLoading(true);
+    const callbackUrl=new URL("/auth/callback",window.location.origin);
+    if(teacher){
+      callbackUrl.searchParams.set("wants_teacher","1");
+    }
 
     const { error: googleError } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options:{
-        redirectTo:`${window.location.origin}/auth/callback`,
-      }
+      options: {
+        redirectTo: callbackUrl.toString(),
+      },
     });
 
     if (googleError) {
@@ -214,10 +241,19 @@ export default function SignupPageView() {
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="h-4 w-4 rounded border-slate-600 bg-slate-800 accent-orange-500"
+                className="flex items-center gap-2 text-sm text-slate-300"
               />
               Remember me
             </label>
+            <label className="flex items-center gap-2 text-sm text-slate-300">
+              <input
+                type="checkbox"
+                checked={teacher}
+                onChange={(e) => setTeacher(e.target.checked)}
+              />
+               I want to become a teacher
+            </label>
+ 
 
             <button
               type="submit"
@@ -247,7 +283,7 @@ export default function SignupPageView() {
           </button>
 
 
-          <p className="mt-2 text-sm text-slate-300">
+          <p className="mt-2 text-sm text-slate-300 text-center">
             Already have an account?{" "}
             <Link href="/login" className="font-semibold text-orange-400 hover:underline">
               Login
@@ -284,3 +320,4 @@ function GoogleIcon() {
     </svg>
   );
 }
+

@@ -39,7 +39,7 @@ export default function LoginPageView() {
     const role = user?.app_metadata?.role;
 
     if (role === "student") router.replace("/student");
-    else if (role === "teacher") router.replace("/teacher");
+    else if (role === "teacher" || role === "teacher_pending") router.replace("/teacher");
     else if (role === "admin") router.replace("/admin");
     else router.replace("/");
 

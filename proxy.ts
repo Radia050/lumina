@@ -3,7 +3,7 @@ import { createServerClient } from "@supabase/ssr";
 import { getRole } from "@/features/utils/auth/getRole";
 
 export async function proxy(req: NextRequest) {
-  let response = NextResponse.next({ request: req });
+  const response = NextResponse.next({ request: req });
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -27,7 +27,7 @@ export async function proxy(req: NextRequest) {
   } = await supabase.auth.getUser();
   const role = getRole(user);
   const dashboardPath =
-    role === "teacher"
+    role === "teacher" || role === "teacher_pending"
       ? "/teacher"
       : role === "student"
         ? "/student"
@@ -41,6 +41,24 @@ export async function proxy(req: NextRequest) {
   const isAdminRoute = req.nextUrl.pathname.startsWith("/admin");
   const isAuthPage =
     req.nextUrl.pathname === "/login" || req.nextUrl.pathname === "/signup";
+  if (isAuthPage && user) {
+    return NextResponse.redirect(new URL(dashboardPath, req.url));
+  }
+
+const isTeacherApplyRoute = req.nextUrl.pathname === "/teacher/apply";
+
+if (
+  isTeacherRoute &&
+  !isTeacherApplyRoute &&
+  role !== "teacher" &&
+  role !== "teacher_pending"
+) {
+  return NextResponse.redirect(new URL("/", req.url));
+}
+
+if (isTeacherApplyRoute && !user) {
+  return NextResponse.redirect(new URL("/", req.url));
+}
 
 
   if (isStudentRoute) {
@@ -48,10 +66,7 @@ export async function proxy(req: NextRequest) {
       return NextResponse.redirect(new URL("/", req.url));
     }
   }
-  if (isTeacherRoute && role !== "teacher") {
-    return NextResponse.redirect(new URL("/", req.url));
-  }
-  if (isHeroPage && user && role === "teacher") {
+  if (isHeroPage && user && (role === "teacher" || role === "teacher_pending")) {
     return NextResponse.redirect(new URL("/teacher", req.url));
   }
 
@@ -62,10 +77,7 @@ export async function proxy(req: NextRequest) {
   if (isAdminRoute && role !== "admin") {
     return NextResponse.redirect(new URL("/", req.url));
   }
-  if(isAuthPage && user){
-    return NextResponse.redirect(new URL(dashboardPath,req.url));
-  }
-
+ 
   return response;
 }
 

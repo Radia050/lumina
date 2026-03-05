@@ -12,7 +12,7 @@ export default async function Page() {
   } = await supabase.auth.getUser();
 
   const role = getRole(user);
-  if (role === "teacher") redirect("/teacher");
+  if (role === "teacher" || role === "teacher_pending") redirect("/teacher");
   if (role === "student") redirect("/student");
   if (role === "admin") redirect("/admin");
 

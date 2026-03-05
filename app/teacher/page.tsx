@@ -18,14 +18,50 @@ export default async function teacherPage() {
   }
 
   const role = getRole(user);
-  if (role !== "teacher") {
+  if (role !== "teacher" && role !== "teacher_pending") {
     redirect("/");
   }
+  const isPending = role === "teacher_pending";
   return (
-    <main className="min-h-screen pt-28 pb-24 px-4 flex items-center justify-center">
-      <div className="w-full max-w-3xl text-center space-y-6">
-        <h1 className="text-3xl font-bold">Teachers Page</h1>
-        <div className="flex justify-center">
+    <main className="min-h-screen pt-28 pb-24 px-4 flex items-center justify-center bg-slate-950">
+      <div className="w-full max-w-4xl space-y-6">
+        <h1 className="text-3xl font-bold text-center">Teacher Dashboard</h1>
+
+        {isPending ? (
+          <div className="rounded-lg border border-amber-400/40 bg-amber-500/10 px-4 py-3 text-amber-200">
+            Your teacher application is pending admin approval. Actions are
+            disabled until approval.
+          </div>
+        ) : null}
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          <button
+            disabled={isPending}
+            className="rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-left font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Create Course
+          </button>
+          <button
+            disabled={isPending}
+            className="rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-left font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Manage Courses
+          </button>
+          <button
+            disabled={isPending}
+            className="rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-left font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Create Quiz
+          </button>
+          <button
+            disabled={isPending}
+            className="rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-left font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Publish Content
+          </button>
+        </div>
+
+        <div className="flex justify-center pt-2">
           <LogoutButton />
         </div>
       </div>

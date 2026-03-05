@@ -57,6 +57,16 @@ export async function POST(request: Request) {
       },
       { onConflict: "user_id" },
     );
+    if (role !== "teacher" && role !== "admin") {
+  const { error: pendingRoleError } = await admin.auth.admin.updateUserById(user.id, {
+    app_metadata: { ...(user.app_metadata ?? {}), role: "teacher_pending" },
+  });
+
+  if (pendingRoleError) {
+    console.error("[auth/finalize-signup] Failed to set teacher_pending role:", pendingRoleError.message);
+    return NextResponse.json({ error: "Failed to update role" }, { status: 500 });
+  }
+}
 
     if (reqError) {
       console.error("[auth/finalize-signup] Teacher request failed:", reqError.message);

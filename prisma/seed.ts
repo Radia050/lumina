@@ -18,6 +18,8 @@ const teacherEmail = process.env.SEED_TEACHER_EMAIL || "john.doe@example.com";
 const teacherPassword = process.env.SEED_TEACHER_PASSWORD ;
 const studentEmail = process.env.SEED_STUDENT_EMAIL || "jane.smith@example.com";
 const studentPassword = process.env.SEED_STUDENT_PASSWORD ;
+const studentSupabaseId =
+  process.env.SEED_STUDENT_SUPABASE_ID || "seed-student-local";
 if(!teacherPassword || !studentPassword){
   throw new Error("Teacher and student passwords must be provided in environment variables");
 }
@@ -47,13 +49,13 @@ const hashedStudentPassword = await bcrypt.hash(studentPassword, 10);
     update: {
       std_name: "Jane",
       std_lastname: "Smith",
-      std_password: hashedStudentPassword,
+      supabaseId: studentSupabaseId,
     },
     create: {
       std_name: "Jane",
       std_lastname: "Smith",
       std_email: studentEmail,
-      std_password: hashedStudentPassword,
+      supabaseId: studentSupabaseId,
     }
   });
    console.log("Student created:", student.std_id);

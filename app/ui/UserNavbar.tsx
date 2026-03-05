@@ -15,6 +15,7 @@ const NavBar: React.FC = () => {
   const navLinks = [
     { name: "Home", href: "/", icon: House },
     { name: "Courses", href: "/courses", icon: Blocks },
+    { name: "Courses", href: "/c", icon: LibraryBig },
   ];
 
   return (

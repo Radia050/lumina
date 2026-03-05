@@ -42,7 +42,6 @@ export async function proxy(req: NextRequest) {
   const isAuthPage =
     req.nextUrl.pathname === "/login" || req.nextUrl.pathname === "/signup";
 
-
   if (isStudentRoute) {
     if (!user || role !== "student") {
       return NextResponse.redirect(new URL("/", req.url));

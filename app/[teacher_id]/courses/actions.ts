@@ -1,24 +1,24 @@
-"use server"
+"use server";
 
-import { createClient } from "@/lib/supabase/server"
-import { revalidatePath } from "next/cache"
+import { createClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
 
 export async function addSkill(formData: {
-      skl_title: string,
-      skl_dscrptn: string,
-      skl_duration: number,
-      teacher_id: string,
-    }) {
-  const supabase = await createClient()
+  skl_title: string;
+  skl_dscrptn: string;
+  skl_duration: number;
+  teacher_id: string;
+}) {
+  const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("Skill")
     .insert(formData)
     .select()
-    .single()
+    .single();
 
-  if (error) return { error: error.message }
+  if (error) return { error: error.message };
 
-  revalidatePath("/teacher/courses") 
-  return { data }
+  revalidatePath(`/${formData.teacher_id}/courses`);
+  return { data };
 }

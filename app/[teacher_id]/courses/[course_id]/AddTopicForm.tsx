@@ -223,7 +223,7 @@ export default function AddTopicForm({
                         {content.type === "video" && "Video URL"}
                         {content.type === "audio" && "Audio file"}
                         {content.type === "pdf" && "PDF file"}
-                        {content.type === "doc" && "Documentation URL"}
+                        {content.type === "docs" && "Documentation URL"}
                       </label>
 
                       {content.type === "audio" || content.type === "pdf" ? (

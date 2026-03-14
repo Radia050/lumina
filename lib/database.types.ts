@@ -49,31 +49,25 @@ export type Database = {
       }
       Content: {
         Row: {
-          audio_file: string | null
           cntnt_id: string
           cntnt_title: string
           cntnt_type: Database["public"]["Enums"]["cntnt_type"]
-          pdf_file: string | null
+          cntnt_value: string | null
           tpc_id: string | null
-          vd_link: string | null
         }
         Insert: {
-          audio_file?: string | null
           cntnt_id: string
           cntnt_title: string
           cntnt_type: Database["public"]["Enums"]["cntnt_type"]
-          pdf_file?: string | null
+          cntnt_value?: string | null
           tpc_id?: string | null
-          vd_link?: string | null
         }
         Update: {
-          audio_file?: string | null
           cntnt_id?: string
           cntnt_title?: string
           cntnt_type?: Database["public"]["Enums"]["cntnt_type"]
-          pdf_file?: string | null
+          cntnt_value?: string | null
           tpc_id?: string | null
-          vd_link?: string | null
         }
         Relationships: [
           {
@@ -378,18 +372,21 @@ export type Database = {
         Row: {
           parent_id: string | null
           skill_id: string | null
+          tpc_description: string | null
           tpc_id: string
           tpc_title: string
         }
         Insert: {
           parent_id?: string | null
           skill_id?: string | null
+          tpc_description?: string | null
           tpc_id: string
           tpc_title: string
         }
         Update: {
           parent_id?: string | null
           skill_id?: string | null
+          tpc_description?: string | null
           tpc_id?: string
           tpc_title?: string
         }
@@ -554,20 +551,3 @@ export const Constants = {
     },
   },
 } as const
-// add at the bottom of database.types.ts
-export type Skill = Tables<"Skill">
-export type Topic = Tables<"Topic">
-export type Content = Tables<"Content">
-export type Student = Tables<"Student">
-export type Teacher = Tables<"Teacher">
-export type TeacherRequest = Tables<"teacher_requests">
-export type Enroll = Tables<"enroll">
-export type Quiz = Tables<"quiz">
-export type QResponse = Tables<"q_response">
-export type Review = Tables<"review">
-export type Score = Tables<"score">
-
-// enum types
-export type ContentType = Enums<"cntnt_type">
-export type Difficulty = Enums<"difficulty">
-export type Level = Enums<"level">
